@@ -1,0 +1,38 @@
+name: Genera reel settimanali
+
+on:
+  schedule:
+    # Esempio: ogni lunedì, mercoledì e venerdì alle 18:00 (ora italiana in inverno; UTC+1)
+    - cron: '0 17 * * 1,3,5'
+  workflow_dispatch: {}   # permette anche di lanciarlo a mano da GitHub
+
+jobs:
+  genera:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installa dipendenze
+        run: npm install
+
+      - name: Genera il contenuto del prossimo reel (script, caption, immagine/screenshot)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node generate-content.js auto
+
+      - name: Genera i reel in coda
+        run: node orchestrate.js
+
+      - name: Pubblica su GitHub Pages (commit dei risultati)
+        run: |
+          git config user.name "reel-bot"
+          git config user.email "reel-bot@users.noreply.github.com"
+          git add docs/ queue/done/
+          git diff --cached --quiet || git commit -m "Nuovi reel generati automaticamente"
+          git push
