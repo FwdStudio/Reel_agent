@@ -1,0 +1,20 @@
+[
+  {
+    "slug": "mister-board",
+    "name": "Mister Board",
+    "url": "https://fwdstudio.github.io/mister-board/",
+    "description": "PWA per allenatori di calcio giovanile: gestione rosa, calendario partite/allenamenti, lavagna tattica interattiva."
+  },
+  {
+    "slug": "filo-uncinetto",
+    "name": "Filo",
+    "url": "https://fwdstudio.github.io/filo/",
+    "description": "PWA per l'uncinetto: schemi, contarighe, editor griglia e conversioni tra sistemi di misura, tutto client-side."
+  },
+  {
+    "slug": "budgetly",
+    "name": "Budgetly (CasaSpese)",
+    "url": "https://fwdstudio.github.io/budgetly/",
+    "description": "Gestore spese familiari: monitora entrate/uscite condivise, categorie, budget mensile."
+  }
+]
