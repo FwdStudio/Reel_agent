@@ -1,0 +1,17 @@
+{
+  "name": "reel-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Genera reel automaticamente pilotando Reel Animator con Puppeteer",
+  "main": "generate-reel.js",
+  "scripts": {
+    "generate": "node generate-reel.js",
+    "voice": "node generate-voice.js",
+    "content": "node generate-content.js"
+  },
+  "dependencies": {
+    "puppeteer": "^23.0.0",
+    "msedge-tts": "^1.4.0",
+    "@google/genai": "^0.3.0"
+  }
+}
