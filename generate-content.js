@@ -156,23 +156,31 @@ async function buildProductReel(ai, history) {
   const idx = products.findIndex(p => p.slug === lastUsed);
   const next = products[(idx + 1) % products.length]; // round-robin
 
-  const { script, caption } = await generateScriptAndCaption(ai,
-    `Scrivi un reel che presenta questa app: "${next.name}" — ${next.description}\nMetti in risalto un beneficio concreto per chi la usa, con un hook nei primi 2 secondi.`
-  );
+  const type = next.type || 'pwa'; // retrocompatibile: le voci senza "type" restano PWA
 
-  const screenshotBuffer = await screenshotProduct(next.url);
+  const promptExtra = type === 'book'
+    ? `Scrivi un reel che presenta questo libro: "${next.name}" — ${next.description}\nMetti in risalto un beneficio concreto per chi lo legge, con un hook nei primi 2 secondi. Chiudi con una call-to-action verso il link in Amazon/bio.`
+    : `Scrivi un reel che presenta questa app: "${next.name}" — ${next.description}\nMetti in risalto un beneficio concreto per chi la usa, con un hook nei primi 2 secondi.`;
+
+  const { script, caption } = await generateScriptAndCaption(ai, promptExtra);
+
+  // Per le PWA facciamo uno screenshot dal vivo; per i libri usiamo la
+  // copertina già pronta (nessuna pagina web da fotografare).
+  const imageBuffer = type === 'book'
+    ? fs.readFileSync(path.join(ROOT, next.coverImage))
+    : await screenshotProduct(next.url);
 
   const slug = `${todayStr()}-prodotto-${next.slug}`;
   const folder = path.join(QUEUE_DIR, slug);
   fs.mkdirSync(folder, { recursive: true });
-  fs.writeFileSync(path.join(folder, 'frame1.jpg'), screenshotBuffer);
+  fs.writeFileSync(path.join(folder, 'frame1.jpg'), imageBuffer);
 
   const manifest = {
     pageUrl: PAGE_URL,
     script,
     caption,
     voice: 'it-IT-DiegoNeural',
-    images: [{ file: 'frame1.jpg', duration: 6, effect: 'pan-up' }],
+    images: [{ file: 'frame1.jpg', duration: 6, effect: type === 'book' ? 'zoom-in' : 'pan-up' }],
     texts: [{ text: next.name, start: 0, end: 2, position: 'top' }]
   };
   writeJSON(path.join(folder, 'manifest.json'), manifest);
